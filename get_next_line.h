@@ -6,12 +6,13 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:41:39 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/26 14:23:59 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/26 15:06:52 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
+# define BUFFER_SIZE 64
 # include <stdarg.h>
 # include <stdlib.h>
 # include <unistd.h>

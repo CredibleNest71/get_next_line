@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:32:08 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/26 14:23:02 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/26 16:00:05 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,26 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-char	get_c(int fd)
+char	*get_buf(int fd, int *bookmark)
 {
-	char	buf[1];
-	read(fd, buf, 1);
-	return (buf[0]);
+	char	buf[BUFFER_SIZE];
+	int		bytes;
+	int		i;
+
+	i = 0;
+	bytes = read(fd, buf, BUFFER_SIZE);
+	if (bytes <= 0)
+		return (NULL);
+	while (i++ < BUFFER_SIZE)
+	{
+		if (buf[i] == '\n')
+		{
+			*bookmark = i;
+			return (buf);
+		}
+	}
+	bookmark = BUFFER_SIZE;
+	return (buf);
 }
 
 int	ft_strlen(const char *str)
@@ -45,50 +60,57 @@ int	ft_strlen(const char *str)
 	return (length);
 }
 
-size_t	ft_strlcpy(char *dest, const char *src, size_t size)
+void	append(char *dst, char *src, size_t n)
 {
-	unsigned int	i;
+	size_t i;
 
+	if (!dst && !src)
+		return (0);
 	i = 0;
-	if (!size)
-		return (ft_strlen(src));
-	while (src[i] && (i < size - 1))
+	while (dst[i])
+		i++;
+	dst = &dest[i];
+	i = 0;
+	while (i < n && src[i])
 	{
-		dest[i] = src[i];
+		((unsigned char *)dst)[i] = ((unsigned char *)src)[i];
 		i++;
 	}
-	return (ft_strlen(src));
+	return ;
+}
+
+void	copy_from_bookmark(char *rest, char *buf, int bookmark)
+{
+	int	i;
+
+	i = 0;
+	while (bookmark < BUFFER_SIZE)
+	{
+		rest[i++] = buf[bookmark++];
+	}
+	rest[i] = 0;
 }
 
 char	*get_next_line(int fd)
 {
-	char			*temp;
 	char			*line;
-	unsigned int	size;
-	unsigned int	i;
+	char			*buf;
+	int				bookmark;
+	static char		rest[BUFFER_SIZE];
+	int				i;
 
-	i = 0;
-	size = 32;
-	line = (char *) malloc(size + 1);
-	if (!line)
+	bookmark = BUFFER_SIZE;
+	line = (char *) malloc(BUFFER_SIZE* 10);
+	if (!line || !rest)
 		return (0);
-	while (line[i] != '\n')
+	append(line, rest, ft_strlen(rest));
+	while (bookmark == BUFFER_SIZE)
 	{
-		line[i] = get_c(fd);
-		if (line[i] == '\n' || line[i] == 0)
-			break;
-		if (i == size - 1)
-		{
-			size *= 2;
-			temp = (char *) malloc(size);
-			ft_strlcpy(temp, line, size);
-			free(line);
-			line = temp;
-		}
-		i++;
+		buf = get_buf(fd, &bookmark);
+		append(line, buf, bookmark);
 	}
-	line[i++] = '\n';
-	line[i] = 0;
+	append(line, buf, bookmark);
+	copy_from_bookmark(rest, buf, bookmark);
 	return (line);
 }
 
