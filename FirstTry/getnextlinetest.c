@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/27 14:07:05 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/27 15:15:14 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,29 +63,47 @@ int	get_buf(int fd, char *rest)
         rest[i] = buf[i];
         i++;
     }
+	return (bytesread);
+}
+
+int	look_for_end(char *str)
+{
+	int	i;
+	
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\n')
+		{
+			while (str[i] == '\n')
+				i++;
+			return (i);
+		}
+		i++;
+	}
 	return (i);
 }
 
-int	redo_rest(char *oldrest, int idx, int fd)
+int	redo_rest(char *rest, int fd)
 {
-	char	newrest[BUFFER_SIZE + 1];
-
-	int	i;
-	int	errors;
-
+	int		check;
+	int		end;
+	int		i;
+	
+	end = look_for_end(rest);
+	if (end == 0 || end >= BUFFER_SIZE)
+	{
+		check = get_buf(fd, rest);
+		if (check <= 0)
+			return (-1);
+		return (0);
+	}
 	i = 0;
-	while (oldrest[idx + i])
-	{
-		newrest[i] == oldrest[idx + i];
-		i++;
-	}
-	while (i < BUFFER_SIZE)
-		newrest[i++] = 0;
-	if (newrest[0] == 0)
-	{
-		errors = get_buf(fd, newrest);
-	}
-	return (errors);
+	while (rest[end])
+		rest[i++] = rest[end++];
+	while (rest[i])
+		rest[i++] = 0;
+	return (0);
 }
 
 int	append_from_rest(char *dst, char *src, int fd)
@@ -94,13 +112,13 @@ int	append_from_rest(char *dst, char *src, int fd)
 	int	length;
     int found;
 
-    found = 0;
 	length = len(dst);
 	i = 0;
 	while (src[i])
 	{
 		if (src[i] == '\n')
 		{
+			found = i + 1;
 			while (src[i] == '\n')
 				i++;
             found = 1;
@@ -109,31 +127,15 @@ int	append_from_rest(char *dst, char *src, int fd)
 		dst[length + i] = src[i];
 		i++;
 	}
-	redo_rest(src, i, fd);
 	dst[length + i] = 0;
     return (found);
-}
-
-void	append(char *dst, char *src, int size)
-{
-	int	i;
-	int	length;
-
-	length = len(dst);
-	i = 0;
-	while (src[i] && i < size)
-	{
-		dst[length + i] = src[i];
-		i++;
-	}
-	dst[length + i] = 0;
 }
 
 char	*get_next_line(int fd)
 {
     char		*line;
     static char	rest[BUFFER_SIZE + 1] = {0};
-    int         found;
+    static int  found;
 	int			i;
 
 	found = 0;
@@ -143,11 +145,10 @@ char	*get_next_line(int fd)
 		line[i++] = 0;
 	while (!found)
     {
-        line = expand(line, BUFFER_SIZE);
+		redo_rest()
         found = append_from_rest(line, rest, fd);
     }
 	line = expand(line, 2);
-	append(line, "\n\0", 2);
 	return (line);
 }
 
