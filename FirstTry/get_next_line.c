@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/27 13:17:23 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/27 13:59:06 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,50 @@ void	append(char *dst, char *src, int size)
 		i++;
 	}
 	dst[length + i] = 0;
+}
+
+void	append_from_rest(char *dst, char *src, int fd)
+{
+	int	i;
+	int	length;
+
+	length = len(dst);
+	i = 0;
+	while (src[i])
+	{
+		if (src[i] == '\n')
+		{
+			while (src[i] == '\n')
+				i++;
+			break ;
+		}
+		dst[length + i] = src[i];
+		i++;
+	}
+	redo_rest(src, i, fd);
+	dst[length + i] = 0;
+}
+
+int	redo_rest(char *oldrest, int idx, int fd)
+{
+	char	newrest[BUFFER_SIZE + 1];
+
+	int	i;
+	int	errors;
+
+	i = 0;
+	while (oldrest[idx + i])
+	{
+		newrest[i] == oldrest[idx + i];
+		i++;
+	}
+	while (i < BUFFER_SIZE)
+		newrest[i++] = 0;
+	if (newrest[0] == 0)
+	{
+		errors = get_buf(fd, newrest);
+	}
+	return (errors);
 }
 
 void	set_rest(char *rest, int bookmark)
