@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/27 15:15:14 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/27 15:20:00 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,29 +106,21 @@ int	redo_rest(char *rest, int fd)
 	return (0);
 }
 
-int	append_from_rest(char *dst, char *src, int fd)
+void	append_from_rest(char *dst, char *src, int fd)
 {
 	int	i;
 	int	length;
-    int found;
+    int end;
 
 	length = len(dst);
 	i = 0;
-	while (src[i])
+	end = look_for_end(src);
+	expand(dst, end);
+	while (i <= end)
 	{
-		if (src[i] == '\n')
-		{
-			found = i + 1;
-			while (src[i] == '\n')
-				i++;
-            found = 1;
-			break ;
-		}
-		dst[length + i] = src[i];
+		dst[i + length] = src[i];
 		i++;
 	}
-	dst[length + i] = 0;
-    return (found);
 }
 
 char	*get_next_line(int fd)
