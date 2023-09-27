@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/27 09:37:36 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/27 10:26:26 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-size_t	len(char *str)
+int	len(char *str)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
 	while (str[i])
@@ -60,7 +60,7 @@ void	append(char *dst, char *src, int size)
 	dst[length + i] = 0;
 }
 
-void	set_rest(char *rest, char *src, int bookmark)
+void	set_rest(char *rest, char *buf, int bookmark)
 {
 	int	i;
 
@@ -68,8 +68,9 @@ void	set_rest(char *rest, char *src, int bookmark)
 	while (i < BUFFER_SIZE)
 		rest[i++] = 0;
 	i = 0;
-	while (bookmark < BUFFER_SIZE)
-		rest[i++] = src[bookmark++];
+	while (buf[bookmark])
+		rest[i++] = buf[bookmark++];
+	rest[i] = 0;
 }
 
 char	*get_buf(int fd)
@@ -104,15 +105,18 @@ int		check_buf(char *buf)
 char	*get_next_line(int fd)
 {
     char		*line;
-    static char	rest[BUFFER_SIZE];
+    static char	rest[BUFFER_SIZE] = {0};
 	char		*buf;
 	int			bookmark;
 
 	line = (char *) malloc(BUFFER_SIZE);
+	set_rest(line, rest, BUFFER_SIZE);
 	append(line, rest, BUFFER_SIZE);
 	while (1)
 	{
 		buf = get_buf(fd);
+		if (!buf)
+			return (NULL);
 		bookmark = check_buf(buf);
 		if (bookmark > 0)
 			break;
@@ -120,9 +124,10 @@ char	*get_next_line(int fd)
 		append(line, buf, BUFFER_SIZE);
 		free(buf);
 	}
-	line = expand(line, bookmark);
+	line = expand(line, bookmark + 1);
 	append(line, buf, bookmark);
-	set_rest(rest, buf, bookmark);
+	append(line, "\n", 1);
+	set_rest(rest, buf, bookmark + 1);
 	free(buf);
 	return (line);
 }
@@ -137,15 +142,15 @@ int	main(void)
 	fd2 = open("tests/test2.txt", O_RDONLY);
 	fd3 = open("tests/test3.txt", O_RDONLY);
 	line = get_next_line(fd1);
-	printf("%s", line);
+	printf("LINE%s", line);
 	line = get_next_line(fd1);
-	printf("%s", line);	
+	printf("LINE%s",line);	
 	line = get_next_line(fd1);
-	printf("%s", line);	
-	line = get_next_line(fd1);
-	printf("%s", line);	
-	line = get_next_line(fd1);
-	printf("%s", line);
+	printf("LINE%s", line);
+	// line = get_next_line(fd1);
+	// printf("LINE%s", line);
+	// line = get_next_line(fd1);
+	// printf("LINE%s", line);
 	free(line);
 	close(fd1);
 	close(fd2);
