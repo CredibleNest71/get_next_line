@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_cleaner.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/28 13:14:39 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/28 16:38:08 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,17 @@ char	*get_next_line(int fd)
 
 	found = 0;
 	i = 0;
-	line = (char *) malloc(BUFFER_SIZE + 1);
+	line = (char *) malloc(10);
+	line[0] = 0;
 	if (!line)
 		return (NULL);
-	while (i < BUFFER_SIZE + 1)
+	while (i < BUFFER_SIZE)
 		line[i++] = 0;
 	while (!found)
     {
 		redo_rest(rest, fd);
         append_from_rest(line, rest, fd, &found);
+		printf("LINE ATM = %s\n", line);
     }
 	return (line);
 }
@@ -48,17 +50,29 @@ int	main(void)
 	fd2 = open("tests/test.txt", O_RDONLY);
 	fd1 = open("tests/test2.txt", O_RDONLY);
 	fd3 = open("tests/test3.txt", O_RDONLY);
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	line = get_next_line(fd1);
-	printf("LINE%s",line);	
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	free(line);
+	
+	printf("%s", get_next_line(fd1));
+
+
+	// printf("LINE= %s", line);
+	// free(line);
+
+	// line = get_next_line(fd1);
+	// printf("LINE= %s",line);	
+	// free(line);
+
+	// line = get_next_line(fd1);
+	// printf("LINE= %s", line);
+	// free(line);
+
+	// line = get_next_line(fd1);
+	// printf("LINE= %s", line);
+	// free(line);
+
+	// line = get_next_line(fd1);
+	// printf("LINE= %s", line);
+	// free(line);
+	
 	close(fd1);
 	close(fd2);
 	close(fd3);

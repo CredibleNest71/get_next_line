@@ -1,18 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   getnextestline2.c                                  :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/28 14:26:36 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/27 13:59:06 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+
 #include <stdio.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include "get_next_line.h"
 
 int	len(char *str)
 {
@@ -60,6 +63,50 @@ void	append(char *dst, char *src, int size)
 	dst[length + i] = 0;
 }
 
+void	append_from_rest(char *dst, char *src, int fd)
+{
+	int	i;
+	int	length;
+
+	length = len(dst);
+	i = 0;
+	while (src[i])
+	{
+		if (src[i] == '\n')
+		{
+			while (src[i] == '\n')
+				i++;
+			break ;
+		}
+		dst[length + i] = src[i];
+		i++;
+	}
+	redo_rest(src, i, fd);
+	dst[length + i] = 0;
+}
+
+int	redo_rest(char *oldrest, int idx, int fd)
+{
+	char	newrest[BUFFER_SIZE + 1];
+
+	int	i;
+	int	errors;
+
+	i = 0;
+	while (oldrest[idx + i])
+	{
+		newrest[i] == oldrest[idx + i];
+		i++;
+	}
+	while (i < BUFFER_SIZE)
+		newrest[i++] = 0;
+	if (newrest[0] == 0)
+	{
+		errors = get_buf(fd, newrest);
+	}
+	return (errors);
+}
+
 void	set_rest(char *rest, int bookmark)
 {
 	int		i;
@@ -87,8 +134,8 @@ int	get_buf(int fd, char *rest)
     i = 0;
 	bytesread = read(fd, buf, BUFFER_SIZE);
 	if (bytesread <= 0)
-		return (0);
-    while (i < BUFFER_SIZE)
+		return (bytesread);
+    while (i < BUFFER_SIZE + 1)
     {
         rest[i] = buf[i];
         i++;
@@ -104,7 +151,7 @@ int		check_buf(char *buf)
 	while (buf[i])
 	{
 		if (buf[i] == '\n')
-			return (i + 1);
+			return (i);
 		i++;
 	}
     return (i);
@@ -117,6 +164,7 @@ char	*get_next_line(int fd)
 	int			bookmark;
     int         found;
 	int			i;
+	int endoffile = 0;
 
 	found = 0;
 	i = 0;
@@ -127,7 +175,7 @@ char	*get_next_line(int fd)
 	while (rest[i])
 	{
 		line[i] = rest[i];
-		if (rest[i] == '\n' || (rest[i] == 0 && i < BUFFER_SIZE))
+		if (rest[i] == '\n')
 		{
 			set_rest(rest, i + 1);
 			return (line);
@@ -136,51 +184,51 @@ char	*get_next_line(int fd)
 	}
 	while (!found)
     {
-		if (get_buf(fd, rest) <= 0)
-			return (line);
-        bookmark = check_buf(rest);
+		int bytes = get_buf(fd, rest);
+		if (bytes <= 0)
+		{
+			free(line);
+			return (NULL);
+		}
+		else if (bytes < BUFFER_SIZE)
+			endoffile = 1;
+		bookmark = check_buf(rest);
 		if (bookmark < BUFFER_SIZE)
 			found = 1;
 		line = expand(line, bookmark + 1);
         append(line, rest, bookmark);
-        set_rest(rest, bookmark);
+        set_rest(rest, bookmark + 1);
     }
-	line = expand(line, 1);
-	append(line, "\0", 1);
+	line = expand(line, 2);
+	if (endoffile)
+		append(line, "\0", 1);
+	else
+		append(line, "\n\0", 2);
 	return (line);
 }
 
-int	main(void)
-{
-	char	*line;
-	int		fd1;
-	int		fd2;
-	int		fd3;
-	fd3 = open("tests/test.txt", O_RDONLY);
-	fd2 = open("tests/test2.txt", O_RDONLY);
-	fd1 = open("tests/test3.txt", O_RDONLY);
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	free(line);
-
-	line = get_next_line(fd1);
-	printf("LINE%s",line);	
-	free(line);
-
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	free(line);
-
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	free(line);
-
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	free(line);
-	
-	close(fd1);
-	close(fd2);
-	close(fd3);
-	return (0);
-}
+// int	main(void)
+// {
+// 	char	*line;
+// 	int		fd1;
+// 	int		fd2;
+// 	int		fd3;
+// 	fd2 = open("tests/test.txt", O_RDONLY);
+// 	fd1 = open("tests/test2.txt", O_RDONLY);
+// 	fd3 = open("tests/test3.txt", O_RDONLY);
+// 	line = get_next_line(fd1);
+// 	printf("LINE%s", line);
+// 	line = get_next_line(fd1);
+// 	printf("LINE%s",line);	
+// 	line = get_next_line(fd1);
+// 	printf("LINE%s", line);
+// 	line = get_next_line(fd1);
+// 	printf("LINE%s", line);
+// 	line = get_next_line(fd1);
+// 	printf("LINE%s", line);
+// 	free(line);
+// 	close(fd1);
+// 	close(fd2);
+// 	close(fd3);
+// 	return (0);
+// }

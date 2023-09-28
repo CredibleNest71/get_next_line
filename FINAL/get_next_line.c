@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   getnextestline2.c                                  :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/27 13:03:07 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/28 15:23:35 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	append(char *dst, char *src, int size)
 
 	length = len(dst);
 	i = 0;
-	while (src[i] && i < size)
+	while (src[i] && i <= size)
 	{
 		dst[length + i] = src[i];
 		i++;
@@ -66,6 +66,7 @@ void	set_rest(char *rest, int bookmark)
 	char	temp[BUFFER_SIZE + 1] = {0};
 	
 	i = 0;
+	bookmark++;
 	while(bookmark < BUFFER_SIZE)
 	{
 		temp[i++] = rest[bookmark++];
@@ -88,7 +89,7 @@ int	get_buf(int fd, char *rest)
 	bytesread = read(fd, buf, BUFFER_SIZE);
 	if (bytesread <= 0)
 		return (0);
-    while (i < BUFFER_SIZE + 1)
+    while (i < BUFFER_SIZE)
     {
         rest[i] = buf[i];
         i++;
@@ -113,64 +114,81 @@ int		check_buf(char *buf)
 char	*get_next_line(int fd)
 {
     char		*line;
-    static char	rest[BUFFER_SIZE + 1] = {0};
+    static char	rest[BUFFER_SIZE] = {0};
 	int			bookmark;
     int         found;
 	int			i;
 
 	found = 0;
 	i = 0;
-	line = (char *) malloc(BUFFER_SIZE + 1);
-	while (i < BUFFER_SIZE + 1)
+	if (!line || fd <= 0)
+	{
+		free(line);
+		return (NULL);
+	}
+	while (i < BUFFER_SIZE)
 		line[i++] = 0;
-	i = 0;
+	// line = (char *) malloc(1);
+	// i = 0;
 	while (rest[i])
 	{
+		line = expand(line, check_buf(rest));
 		line[i] = rest[i];
-		if (rest[i] == '\n')
+		if (rest[i] == '\n' || (rest[i] == 0 && i < BUFFER_SIZE))
 		{
-			set_rest(rest, i + 1);
+			set_rest(rest, i);
 			return (line);
 		}
 		i++;
 	}
 	while (!found)
     {
-		get_buf(fd, rest);
+		if (get_buf(fd, rest) <= 0)
+			return (line);
         bookmark = check_buf(rest);
 		if (bookmark < BUFFER_SIZE)
 			found = 1;
 		line = expand(line, bookmark + 1);
         append(line, rest, bookmark);
-        set_rest(rest, bookmark + 1);
+        set_rest(rest, bookmark);
     }
-	line = expand(line, 2);
-	append(line, "\n\0", 2);
 	return (line);
 }
 
-int	main(void)
-{
-	char	*line;
-	int		fd1;
-	int		fd2;
-	int		fd3;
-	fd2 = open("tests/test.txt", O_RDONLY);
-	fd1 = open("tests/test2.txt", O_RDONLY);
-	fd3 = open("tests/test3.txt", O_RDONLY);
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	line = get_next_line(fd1);
-	printf("LINE%s",line);	
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	line = get_next_line(fd1);
-	printf("LINE%s", line);
-	free(line);
-	close(fd1);
-	close(fd2);
-	close(fd3);
-	return (0);
-}
+// int	main(void)
+// {
+// 	char	*line;
+// 	int		fd1;
+// 	int		fd2;
+// 	int		fd3;
+// 	fd1 = open("tests/test.txt", O_RDONLY);
+// 	fd2 = open("tests/test2.txt", O_RDONLY);
+// 	fd3 = open("tests/test3.txt", O_RDONLY);
+
+// 	int fd = fd2;
+	
+// 	line = get_next_line(fd);
+// 	printf("LINE%s", line);
+// 	free(line);
+
+// 	line = get_next_line(fd);
+// 	printf("LINE%s",line);	
+// 	free(line);
+
+// 	line = get_next_line(fd);
+// 	printf("LINE%s", line);
+// 	free(line);
+
+// 	line = get_next_line(fd);
+// 	printf("LINE%s", line);
+// 	free(line);
+
+// 	line = get_next_line(fd);
+// 	printf("LINE%s", line);
+// 	free(line);
+	
+// 	close(fd1);
+// 	close(fd2);
+// 	close(fd3);
+// 	return (0);
+// }

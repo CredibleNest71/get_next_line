@@ -1,7 +1,7 @@
 CC 			=	cc
 CFLAGS		=	-Wall -Wextra -Werror
 NAME		=	get_next_line.a
-SRC			=	getnextline2.c get_next_line_utils.c
+SRC			=	get_next_line.c get_next_line_utils.c
 OBJ			=	$(SRC:.c=.o)
 
 all:		$(NAME)
