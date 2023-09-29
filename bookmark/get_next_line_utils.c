@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:51:58 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/29 12:40:08 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/29 13:27:29 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,32 +53,19 @@ int	get_buf(int fd, char *rest)
 	return (bytesread);
 }
 
-int	look_for_end(char *str)
-{
-	int	i;
-	
-	i = 0;
-	while (str[i] && str[i] != '\n')
-		i++;
-	return (i);
-}
-
 int	redo_rest(char *rest, int fd, int *bookmark)
 {
-	char	temp[BUFFER_SIZE + 1] = {0};
 	int		check;
 	int		i;
-	int		end;
 	
 	i = 0;
 
-	if (*bookmark == BUFFER_SIZE)
+	if (*bookmark == BUFFER_SIZE || *bookmark == 0)
 	{
 		*bookmark = 0;
-		check = get_buf(fd, rest);
-		return (check);
+		i = get_buf(fd, rest);
+		return (i);
 	}
-	
 	return (i);
 }
 
@@ -88,15 +75,17 @@ char	*append_from_rest(char *dst, char *src, int *found, int *bookmark)
 	int	length;
 	int	beginning;
 
-	beginning = bookmark;
+	beginning = *bookmark;
 	length = 0;
 	while (dst[length])
 		length++;
-	while (src[*bookmark] && src[*bookmark] != '\n' && bookmark < BUFFER_SIZE)
+	while (src[*bookmark] && src[*bookmark] != '\n' && *bookmark < BUFFER_SIZE)
 		*bookmark++;
+	if (*bookmark < BUFFER_SIZE)
+		*found = 1;
 	*bookmark++;
-	dst = expand(dst, *bookmark + 1);
-	while (beginning <= bookmark)
+	dst = expand(dst, (*bookmark - beginning) + 1);
+	while (beginning < *bookmark)
 	{
 		dst[length + i] = src[beginning];
 		beginning++;

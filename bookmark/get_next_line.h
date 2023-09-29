@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:41:39 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/29 11:50:03 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/29 13:10:45 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # include <stdio.h>
 
 char	*get_next_line(int fd);
-int     redo_rest(char *rest, int fd);
+int     redo_rest(char *rest, int fd, int *bookmark);
 char	*expand(char *old, int size);
-char	*append_from_rest(char *dst, char *src, int *found);
+char	*append_from_rest(char *dst, char *src, int *found, int *bookmark);
 #endif
