@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/28 15:23:35 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/29 13:54:39 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,15 +121,16 @@ char	*get_next_line(int fd)
 
 	found = 0;
 	i = 0;
+	line = (char *) malloc(10);
+	i = 0;
 	if (!line || fd <= 0)
 	{
 		free(line);
 		return (NULL);
 	}
-	while (i < BUFFER_SIZE)
+	while (i < 10)
 		line[i++] = 0;
-	// line = (char *) malloc(1);
-	// i = 0;
+
 	while (rest[i])
 	{
 		line = expand(line, check_buf(rest));

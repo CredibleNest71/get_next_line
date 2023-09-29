@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:51:58 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/29 14:17:51 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/29 14:43:12 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	look_for_end(char *str)
 
 int	redo_rest(char *rest, int fd)
 {
-	char	temp[BUFFER_SIZE + 1] = {0};
+	//char	temp[BUFFER_SIZE + 1] = {0};
 	int		check;
 	int		i;
 	int		end;
@@ -87,13 +87,14 @@ int	redo_rest(char *rest, int fd)
 	end = i;
 	i = 0;
 	while (rest[end] && end < BUFFER_SIZE)
-		temp[i++] = rest[end++];
-	i = 0;
+		rest[i++] = rest[end++];
 	while (i < BUFFER_SIZE)
-	{
-		rest[i] = temp[i];
-		i++;
-	}
+		rest[i++] = 0;
+	// while (i < BUFFER_SIZE)
+	// {
+	// 	rest[i] = temp[i];
+	// 	i++;
+	// }
 	return (i);
 }
 
