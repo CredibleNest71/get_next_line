@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 16:26:53 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/29 12:26:55 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/29 14:19:29 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ char	*get_next_line(int fd)
 
 	found = 0;
 	i = 0;
+	// line = NULL;
 	line = (char *) malloc(1);
 	if (!line)
 		return (NULL);
@@ -36,7 +37,6 @@ char	*get_next_line(int fd)
 		if (i < 0)
 		{
 			free(line);
-		//	printf("[i <0]");
 			return (NULL);
 		}
         line = append_from_rest(line, rest, &found);

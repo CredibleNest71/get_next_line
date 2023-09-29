@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:51:58 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/29 12:23:43 by codespace        ###   ########.fr       */
+/*   Updated: 2023/09/29 14:17:51 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@ char	*expand(char *old, int size)
 	char	*new;
 	
 	i = 0;
+	if (old == NULL)
+	{
+		new = malloc(size + 1);
+		return(new);
+	}
 	while (old[i])
 		i++;
 	newlength = i + size + 1;
