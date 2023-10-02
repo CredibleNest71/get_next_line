@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:41:39 by codespace         #+#    #+#             */
-/*   Updated: 2023/09/29 14:28:31 by codespace        ###   ########.fr       */
+/*   Updated: 2023/10/02 16:42:10 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,6 @@
 char	*get_next_line(int fd);
 int     redo_rest(char *rest, int fd);
 char	*expand(char *old, int size);
-char	*append_from_rest(char *dst, char *src, int *found);
+char	*append_from_rest(char *src, int *found);
+char	*ft_strjoin(char const *s1, char const *s2);
 #endif
