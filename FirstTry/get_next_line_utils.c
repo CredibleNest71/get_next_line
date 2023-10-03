@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:51:58 by codespace         #+#    #+#             */
-/*   Updated: 2023/10/02 16:46:35 by codespace        ###   ########.fr       */
+/*   Updated: 2023/10/03 09:58:07 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int	redo_rest(char *rest, int fd)
 	return (i);
 }
 
-char	*append_from_rest(char *src, int *found)
+char	*get_from_rest(char *src, int *found)
 {
 	char *dst;
 	int	i;
@@ -97,9 +97,15 @@ char	*append_from_rest(char *src, int *found)
 
 	end = 0;
 	i = 0;
+	dst = NULL;
 	while (src[end] && src[end] != '\n')
 		end++;
-	dst = malloc(end + 1);
+	if (end)
+		dst = malloc(end + 2);
+	else
+		return (NULL);
+	if (!dst)
+		return (NULL);
 	while (i <= end)
 	{
 		dst[i] = src[i];
@@ -111,24 +117,30 @@ char	*append_from_rest(char *src, int *found)
 	return (dst);
 }
 
-int	gelen(const char *s1, const char *s2)
+int	gelen(char *s1, char *s2)
 {
 	int	i;
 	int	len;
 
 	i = 0;
 	len = 0;
-	while (s1[i])
-		i++;
-	len = i;
+	if (s1)
+	{
+		while (s1[i])
+			i++;
+		len += i;
+	}
 	i = 0;
-	while (s2[i])
-		i++;
-	len += i;
+	if (s2)
+	{
+		while (s2[i])
+			i++;
+		len += i;
+	}
 	return (len);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	int		len;
 	int		i;
@@ -138,17 +150,18 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	j = 0;
 	i = -1;
 	len = gelen(s1, s2);
+	if (!s2 || !s1)
+		return (s1);
 	ans = malloc(len + 1);
 	if (!ans)
 		return (0);
 	while (s1[++i])
 		ans[i] = s1[i];
 	while (s2[j])
-	{
-		ans[i] = s2[j];
-		i++;
-		j++;
-	}
-	ans[i] = 0;
+		ans[i++] = s2[j++];
+	if (s1)
+		free(s1);
+	if (s2)
+		free(s2);
 	return (ans);
 }
