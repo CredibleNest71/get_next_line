@@ -3,48 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mresch <mresch@student.42.fr>              +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 11:51:58 by codespace         #+#    #+#             */
-/*   Updated: 2023/10/04 16:42:04 by mresch           ###   ########.fr       */
+/*   Updated: 2023/10/06 11:40:25 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
-
-char	*expand(char *old, int size)
-{
-	int		i;
-	int		newlength;
-	char	*new;
-	
-	i = 0;
-	if (old == NULL)
-	{
-		new = zalloc(size + 1);
-		return(new);
-	}
-	while (old[i])
-		i++;
-	newlength = i + size + 1;
-	i = 0;
-	new = (char *) zalloc(newlength);
-	if (!new)
-	{
-		free(old);
-		return (NULL);
-	}
-	while (old[i])
-	{
-		new[i] = old[i];
-		i++;
-	}
-	while (i < newlength)
-		new[i++] = 0;
-	free(old);
-	return(new);
-}
 
 int	get_buf(int fd, char *rest)
 {
@@ -54,32 +21,17 @@ int	get_buf(int fd, char *rest)
 	return (bytesread);
 }
 
-// int	look_for_end(char *str)
-// {
-// 	int	i;
-	
-// 	i = 0;
-// 	while (str[i] && str[i] != '\n')
-// 		i++;
-// 	return (i);
-// }
-
 int	redo_rest(char *rest, int fd)
 {
 	int		check;
 	int		i;
 	int		end;
-	
+
 	i = 0;
-	while (rest[i])
-	{
-		if (rest[i] == '\n')
-		{
-			i++;
-			break ;
-		}
+	while (rest[i] && rest[i] != '\n')
 		i++;
-	}
+	if (rest[i] == '\n')
+		i++;
 	if (rest[0] == 0 || i == BUFFER_SIZE)
 	{
 		check = get_buf(fd, rest);
@@ -94,15 +46,14 @@ int	redo_rest(char *rest, int fd)
 		rest[i++] = rest[end++];
 	while (i < BUFFER_SIZE)
 		rest[i++] = 0;
-
 	return (i);
 }
 
 char	*get_from_rest(char *src, int *found)
 {
-	char *dst;
-	int	i;
-    int end;
+	char	*dst;
+	int		i;
+	int		end;
 
 	end = 0;
 	i = 0;
@@ -113,8 +64,6 @@ char	*get_from_rest(char *src, int *found)
 		end++;
 	if (end)
 		dst = zalloc(end + 1);
-	else
-		return (NULL);
 	if (!dst)
 		return (NULL);
 	while (i < end)
@@ -160,14 +109,14 @@ char	*ft_strjoin(char *s1, char *s2)
 
 	j = 0;
 	i = -1;
-	if (!s1)
-		return (s2);
 	if (!s2)
 		return (s1);
+	if (!s1)
+		return (s2);
 	len = gelen(s1, s2);
 	ans = zalloc(len + 1);
 	if (!ans)
-		return (0);
+		return (NULL);
 	while (s1[++i])
 		ans[i] = s1[i];
 	while (s2[j])
